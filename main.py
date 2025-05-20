@@ -13,6 +13,7 @@ class User:
         self.location = location
         self.posts = posts
         self.coordinates= self.get_coordinates()
+        self.marker= map_widget.set_marker(self.coordinates[0], self.coordinates[1])
 
     def get_coordinates(self,) -> list:
         import requests
@@ -35,7 +36,6 @@ def add_users():
     miejscowosc = entry_location.get()
     tmp_user = (User(name= imie , surname= nazwisko, location= miejscowosc, posts=posty))
     users.append(tmp_user)
-    map_widget.set_marker(tmp_user.coordinates[0],tmp_user.coordinates[1], text=tmp_user.location)
     print(users)
     entry_name.delete(0, END)
     entry_surname.delete(0, END)
@@ -51,6 +51,7 @@ def show_users():
 
 def delete_user():
     idx=listbox_lista_obiektow.index(ACTIVE)
+    users[idx].marker.delete()
     users.pop(idx)
     show_users()
 
@@ -60,6 +61,8 @@ def user_details():
     label_surname_szczegoły_obiektow.configure(text=users[idx].surname)
     label_location_szczegoły_obiektu.configure(text=users[idx].location)
     label_posts_szczegoły_obiektow.configure(text=users[idx].posts)
+    map_widget.set_position(users[idx].coordinates[0],users[idx].coordinates[1])
+    map_widget.set_zoom(16)
 
 def edit_user():
     idx=listbox_lista_obiektow.index(ACTIVE)
@@ -77,10 +80,15 @@ def update_users(idx):
     posts=entry_posts.get()
 
 
+
     users[idx].name=name
     users[idx].surname=surname
     users[idx].location=location
     users[idx].posts=posts
+
+    users[idx].marker.delete()
+    users[idx].coordinates=users[idx].get_coordinates()
+    users[idx].marker= map_widget.set_marker(users[idx].coordinates[0],users[idx].coordinates[1])
 
     Button_dodaj_obiekt.configure(text="Dodaj", command=add_users)
     entry_name.delete(0, END)
